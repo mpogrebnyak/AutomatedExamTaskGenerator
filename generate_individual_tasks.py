@@ -23,8 +23,7 @@ class GenerateIndividualTasks:
         self.max_semester = int(config["max_semester"])
         self.personalized_questions = bool(int(config["personalized_questions"]))
         self.add_extra_blank_page = bool(int(config["add_extra_blank_page"]))
-        self.num_students = bool(int(config["num_students"]))
-
+        self.num_students = int(config["num_students"])
         self.questions_per_topic = config["questions_per_topic"]
         self.text = config["text"]
 
@@ -223,17 +222,18 @@ class GenerateIndividualTasks:
                     f"{i}. {question}"
                 ).paragraph_format.line_spacing = Pt(10)
 
-            practical_paragraph = document.add_paragraph()
-            practical_run = practical_paragraph.add_run(self.text["task_practical_section"])
-            practical_run.bold = True
-            practical_paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
             practical_questions = [q for q in questions if q[1] == "Practical"]
+            if len(practical_questions) > 0:
+                practical_paragraph = document.add_paragraph()
+                practical_run = practical_paragraph.add_run(self.text["task_practical_section"])
+                practical_run.bold = True
+                practical_paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
 
-            for i, (question, _) in enumerate(practical_questions, start=1):
-                document.add_paragraph(
-                    f"{i+len(theory_questions)}. {question}"
-                ).paragraph_format.line_spacing = Pt(10)
-                document.add_paragraph()
+                for i, (question, _) in enumerate(practical_questions, start=1):
+                    document.add_paragraph(
+                        f"{i+len(theory_questions)}. {question}"
+                    ).paragraph_format.line_spacing = Pt(10)
+                    document.add_paragraph()
 
             self.add_page_break(document)
 
